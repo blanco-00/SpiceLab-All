@@ -1,8 +1,10 @@
 # MVP Core - Tasks
 
+## Progress: 17/21 完成
+
 ## Phase 1: 基础设施
 
-### T001: 创建前端项目
+- [x] ### T001: 创建前端项目
 
 **描述**: 初始化 React + Vite + Tailwind CSS 项目
 
