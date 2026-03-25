@@ -1,0 +1,23 @@
+{
+  "name": "spicelab",
+  "version": "0.0.1",
+  "private": true,
+  "description": "暧昧实验室 - 私密情侣互动游戏平台",
+  "scripts": {
+    "dev": "pnpm --filter @spicelab/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint"
+  },
+  "keywords": [
+    "couple-game",
+    "truth-or-dare",
+    "party-game",
+    "intimate"
+  ],
+  "author": "SpiceLab",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
