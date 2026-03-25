@@ -1,0 +1,73 @@
+# SpiceLab 生产环境 - 一键部署
+# 使用方式: 
+#   docker compose -f docker-compose.yml --env-file docker/.env up -d
+#   docker compose -f docker-compose.yml --env-file docker/.env down
+#
+# 服务:
+#   - MySQL (13306)
+#   - Backend (8080)
+#   - Frontend (80)
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: spicelab-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_DATABASE: spicelab
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - '13306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - spicelab-network
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-uroot', '-p${MYSQL_ROOT_PASSWORD:-root123}']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./SpiceLab-Private/packages/cloud-service
+      dockerfile: ../../docker/backend/Dockerfile
+    container_name: spicelab-backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD:-root123}
+      - DB_NAME=spicelab
+    ports:
+      - '8080:8080'
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: on-failure:10
+    networks:
+      - spicelab-network
+
+  frontend:
+    build:
+      context: ./SpiceLab/apps/web
+      dockerfile: ../../docker/frontend/Dockerfile
+    container_name: spicelab-frontend
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - spicelab-network
+
+volumes:
+  mysql_data:
+
+networks:
+  spicelab-network:
+    driver: bridge

@@ -1,0 +1,31 @@
+# SpiceLab 本地开发模式 - 只启动数据库服务
+# 使用方式: docker compose -f docker-compose.dev.yml up -d
+# 然后本地启动后端和前端进行开发调试
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: spicelab-mysql-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: spicelab
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - mysql_data:/var/lib/mysql
+    networks:
+      - spicelab-dev-network
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
+
+networks:
+  spicelab-dev-network:
+    driver: bridge
