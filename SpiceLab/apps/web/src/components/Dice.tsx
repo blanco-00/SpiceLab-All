@@ -95,14 +95,14 @@ export default function Dice({ value, rolling, onRoll, disabled }: DiceProps) {
         disabled={disabled || rolling}
         className={`
           w-24 h-24 bg-white rounded-xl shadow-lg
-          ${getDiceFace(rolling ? displayValue : value)}
+          ${getDiceFace(value)}
           transform transition-all duration-200
           ${rolling ? 'animate-bounce' : 'hover:scale-105'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           border-2 border-gray-200
         `}
       >
-        {renderDots(rolling ? displayValue : value)}
+        {renderDots(value)}
       </button>
       
       {!disabled && (
