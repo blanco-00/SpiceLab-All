@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 
+  
 type DiceProps = {
   value: number
   rolling: boolean
@@ -8,8 +9,6 @@ type DiceProps = {
 }
 
 export default function Dice({ value, rolling, onRoll, disabled }: DiceProps) {
-  const [displayValue, setDisplayValue] = useState(1)
-  
   const handleRoll = useCallback(() => {
     if (disabled || rolling) return
     onRoll()
