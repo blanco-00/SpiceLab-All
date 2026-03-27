@@ -1,17 +1,62 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5168'
+
 export default function HomePage() {
   const navigate = useNavigate()
   const [roomCode, setRoomCode] = useState('')
+  const [nickname, setNickname] = useState('')
+  const [isCreating, setIsCreating] = useState(false)
+  const [error, setError] = useState('')
   
   const handleCreateRoom = async () => {
-    navigate('/room/ABC123')
+    const name = nickname.trim() || 'Player'
+    setIsCreating(true)
+    setError('')
+    try {
+      const res = await fetch(`${API_BASE}/api/rooms`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname: name }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || '创建房间失败')
+      }
+      const data = await res.json()
+      sessionStorage.setItem('playerId', data.player.id)
+      sessionStorage.setItem('playerNickname', data.player.nickname)
+      sessionStorage.setItem('isHost', 'true')
+      navigate(`/room/${data.room.code}`)
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setIsCreating(false)
+    }
   }
   
-  const handleJoinRoom = () => {
-    if (roomCode.trim()) {
-      navigate(`/room/${roomCode.toUpperCase()}`)
+  const handleJoinRoom = async () => {
+    if (!roomCode.trim()) return
+    const name = nickname.trim() || 'Player'
+    setError('')
+    try {
+      const res = await fetch(`${API_BASE}/api/rooms/${roomCode.trim().toUpperCase()}/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname: name }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || '加入房间失败')
+      }
+      const data = await res.json()
+      sessionStorage.setItem('playerId', data.player.id)
+      sessionStorage.setItem('playerNickname', data.player.nickname)
+      sessionStorage.setItem('isHost', 'false')
+      navigate(`/room/${roomCode.trim().toUpperCase()}`)
+    } catch (e: any) {
+      setError(e.message)
     }
   }
   
@@ -27,12 +72,26 @@ export default function HomePage() {
       </div>
       
       <div className="w-full max-w-md space-y-4">
+        <input
+          type="text"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          placeholder="输入你的昵称"
+          maxLength={20}
+          className="w-full py-4 px-6 border-2 border-gray-200 rounded-xl text-lg text-center tracking-wider focus:border-primary-500 focus:outline-none"
+        />
+        
         <button
           onClick={handleCreateRoom}
-          className="w-full py-4 px-6 bg-primary-500 text-white rounded-xl text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg"
+          disabled={isCreating}
+          className="w-full py-4 px-6 bg-primary-500 text-white rounded-xl text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg disabled:opacity-50"
         >
-          创建房间
+          {isCreating ? '创建中...' : '创建房间'}
         </button>
+        
+        {error && (
+          <div className="text-red-500 text-center text-sm">{error}</div>
+        )}
         
         <div className="flex gap-2">
           <input

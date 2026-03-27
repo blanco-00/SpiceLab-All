@@ -5,8 +5,8 @@
 #
 # 服务:
 #   - MySQL (13306)
-#   - Backend (8080)
-#   - Frontend (80)
+#   - Backend (18080)
+#   - Frontend (10080)
 
 services:
   mysql:
@@ -17,7 +17,7 @@ services:
       MYSQL_DATABASE: spicelab
       MYSQL_ROOT_HOST: '%'
     ports:
-      - '13306:3306'
+      - '23306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -44,7 +44,7 @@ services:
       - DB_PASSWORD=${MYSQL_ROOT_PASSWORD:-root123}
       - DB_NAME=spicelab
     ports:
-      - '8080:8080'
+      - '18080:8080'
     depends_on:
       mysql:
         condition: service_healthy
@@ -58,7 +58,7 @@ services:
       dockerfile: ../../docker/frontend/Dockerfile
     container_name: spicelab-frontend
     ports:
-      - '80:80'
+      - '10080:80'
     depends_on:
       - backend
     restart: unless-stopped

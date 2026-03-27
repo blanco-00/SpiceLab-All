@@ -11,7 +11,7 @@ services:
       MYSQL_DATABASE: spicelab
       MYSQL_ROOT_HOST: '%'
     ports:
-      - '3306:3306'
+      - '23306:3306'
     volumes:
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - mysql_data:/var/lib/mysql

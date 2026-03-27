@@ -1,6 +1,6 @@
 import { useRoomStore } from '@/stores'
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws'
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5168/ws'
 
 type WebSocketService = {
   connect: (roomId: string, playerId: string) => void
