@@ -56,9 +56,22 @@ export default function RoomPage() {
     return () => clearInterval(interval)
   }, [roomCode])
 
-  const handleStartGame = () => {
-    if (room) {
+  const handleStartGame = async () => {
+    if (!room || !isHost) return
+    
+    try {
+      const res = await fetch(`${API_BASE}/api/games/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomCode: room.code, gameType: 'TRUTH_OR_DARE' }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || '开始游戏失败')
+      }
       navigate(`/game/${room.code}`)
+    } catch (e: any) {
+      alert(e.message)
     }
   }
 
