@@ -9,6 +9,7 @@ export default function HomePage() {
   const [nickname, setNickname] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState('')
+  const [selectedGame, setSelectedGame] = useState<'truth' | 'ludo' | 'wheel' | null>('truth')
   
   const handleCreateRoom = async () => {
     const name = nickname.trim() || 'Player'
@@ -78,15 +79,15 @@ export default function HomePage() {
           onChange={(e) => setNickname(e.target.value)}
           placeholder="输入你的昵称"
           maxLength={20}
-          className="w-full py-4 px-6 border-2 border-gray-200 rounded-xl text-lg text-center tracking-wider focus:border-primary-500 focus:outline-none"
+          className="w-full py-4 px-6 border-2 border-gray-200 rounded-xl text-lg text-center tracking-wider focus:border-blue-500 focus:outline-none"
         />
         
         <button
           onClick={handleCreateRoom}
           disabled={isCreating}
-          className="w-full py-4 px-6 bg-primary-500 text-white rounded-xl text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg disabled:opacity-50"
+          className="w-full py-4 px-6 bg-green-600 text-white rounded-xl text-lg font-bold hover:bg-green-700 transition-colors shadow-lg disabled:opacity-50"
         >
-          {isCreating ? '创建中...' : '创建房间'}
+          {isCreating ? '创建中...' : '✨ 创建房间'}
         </button>
         
         {error && (
@@ -100,12 +101,12 @@ export default function HomePage() {
             onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
             placeholder="输入房间码"
             maxLength={6}
-            className="flex-1 py-4 px-6 border-2 border-gray-200 rounded-xl text-lg text-center tracking-wider focus:border-primary-500 focus:outline-none"
+            className="flex-1 py-4 px-6 border-2 border-gray-200 rounded-xl text-lg text-center tracking-wider focus:border-blue-500 focus:outline-none"
           />
           <button
             onClick={handleJoinRoom}
             disabled={!roomCode.trim()}
-            className="py-4 px-6 bg-gray-800 text-white rounded-xl text-lg font-semibold hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="py-4 px-6 bg-blue-600 text-white rounded-xl text-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             加入
           </button>
@@ -116,17 +117,29 @@ export default function HomePage() {
             选择游戏
           </h2>
           <div className="grid grid-cols-3 gap-4">
-            <div className="p-4 bg-white rounded-xl shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow">
+            <div 
+              onClick={() => setSelectedGame('truth')}
+              className={`p-4 rounded-xl shadow-md text-center cursor-pointer transition-all ${selectedGame === 'truth' ? 'bg-green-100 border-2 border-green-500 ring-2 ring-green-300' : 'bg-white hover:shadow-lg'}`}
+            >
               <div className="text-3xl mb-2">🎲</div>
-              <div className="text-sm font-medium text-gray-700">真心话大冒险</div>
+              <div className={`text-sm font-medium ${selectedGame === 'truth' ? 'text-green-700' : 'text-gray-700'}`}>真心话大冒险</div>
+              {selectedGame === 'truth' && <div className="text-green-500 text-xs mt-1">✓ 已选择</div>}
             </div>
-            <div className="p-4 bg-white rounded-xl shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow">
+            <div 
+              onClick={() => setSelectedGame('ludo')}
+              className={`p-4 rounded-xl shadow-md text-center cursor-pointer transition-all ${selectedGame === 'ludo' ? 'bg-green-100 border-2 border-green-500 ring-2 ring-green-300' : 'bg-white hover:shadow-lg'}`}
+            >
               <div className="text-3xl mb-2">✈️</div>
-              <div className="text-sm font-medium text-gray-700">飞行棋</div>
+              <div className={`text-sm font-medium ${selectedGame === 'ludo' ? 'text-green-700' : 'text-gray-700'}`}>飞行棋</div>
+              {selectedGame === 'ludo' && <div className="text-green-500 text-xs mt-1">✓ 已选择</div>}
             </div>
-            <div className="p-4 bg-white rounded-xl shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow">
+            <div 
+              onClick={() => setSelectedGame('wheel')}
+              className={`p-4 rounded-xl shadow-md text-center cursor-pointer transition-all ${selectedGame === 'wheel' ? 'bg-green-100 border-2 border-green-500 ring-2 ring-green-300' : 'bg-white hover:shadow-lg'}`}
+            >
               <div className="text-3xl mb-2">🎡</div>
-              <div className="text-sm font-medium text-gray-700">大转盘</div>
+              <div className={`text-sm font-medium ${selectedGame === 'wheel' ? 'text-green-700' : 'text-gray-700'}`}>大转盘</div>
+              {selectedGame === 'wheel' && <div className="text-green-500 text-xs mt-1">✓ 已选择</div>}
             </div>
           </div>
         </div>

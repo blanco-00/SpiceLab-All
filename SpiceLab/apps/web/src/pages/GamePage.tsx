@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import TruthOrDareGame from '@/components/TruthOrDareGame'
 
@@ -6,10 +6,12 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5168'
 
 interface GameState {
   gameType: string
-  phase: 'waiting' | 'selecting' | 'answering' | 'finished'
+  phase: 'waiting' | 'selecting' | 'answering' | 'finished' | 'rolling'
   currentTurn: string
   playerOrder: string[]
   diceValue: number
+  otherDiceValue?: number
+  playerDice?: Record<string, number>
   question: {
     id: string
     type: 'truth' | 'dare'
@@ -28,7 +30,7 @@ export default function GamePage() {
 
   const playerId = sessionStorage.getItem('playerId')
 
-  const fetchGameState = async () => {
+  const fetchGameState = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/api/games/${roomCode}/state`)
       if (!res.ok) {
@@ -43,7 +45,7 @@ export default function GamePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [roomCode])
 
   useEffect(() => {
     if (!playerId) {
@@ -51,16 +53,13 @@ export default function GamePage() {
       return
     }
     fetchGameState()
-    const interval = setInterval(fetchGameState, 3000)
+    const interval = setInterval(fetchGameState, 2000)
     return () => clearInterval(interval)
-  }, [roomCode])
+  }, [playerId, roomCode, fetchGameState])
 
-  const handleAction = async (action: string, data?: Record<string, unknown>) => {
+  const handleAction = async (action: string, actionData?: Record<string, unknown>) => {
     try {
-      const body: Record<string, unknown> = { action, playerId }
-      if (data) {
-        Object.assign(body, data)
-      }
+      const body: Record<string, unknown> = { action, playerId, ...actionData }
       const res = await fetch(`${API_BASE}/api/games/${roomCode}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,7 +88,7 @@ export default function GamePage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="text-red-500 mb-4">{error}</div>
-        <button onClick={() => navigate(`/room/${roomCode}`)} className="text-primary-500">
+        <button onClick={() => navigate(`/room/${roomCode}`)} className="text-blue-500">
           返回房间
         </button>
       </div>
@@ -100,7 +99,7 @@ export default function GamePage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="text-gray-600 mb-4">游戏状态加载中...</div>
-        <button onClick={() => navigate(`/room/${roomCode}`)} className="text-primary-500">
+        <button onClick={() => navigate(`/room/${roomCode}`)} className="text-blue-500">
           返回房间
         </button>
       </div>
@@ -112,6 +111,7 @@ export default function GamePage() {
       <TruthOrDareGame
         gameState={gameState}
         currentPlayerId={playerId || ''}
+        playerNames={gameState.playerOrder.map((_, i) => `玩家${i + 1}`)}
         onAction={handleAction}
       />
     )

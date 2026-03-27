@@ -76,9 +76,9 @@ export default function RoomPage() {
   }
 
   const handleCopyLink = () => {
-    const link = `${window.location.origin}/room/${roomCode}`
+    const link = `${window.location.origin}/join/${roomCode}`
     navigator.clipboard.writeText(link)
-    alert('链接已复制!')
+    alert('邀请链接已复制! 对方打开即可加入房间')
   }
 
   if (loading) {
@@ -137,16 +137,16 @@ export default function RoomPage() {
         <div className="flex gap-3">
           <button 
             onClick={handleCopyLink}
-            className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+            className="flex-1 py-3 px-4 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors"
           >
-            复制链接
+            🔗 复制链接
           </button>
           {isHost && (
             <button 
               onClick={handleStartGame}
-              className="flex-1 py-3 px-4 bg-primary-500 text-white rounded-xl font-medium hover:bg-primary-600 transition-colors"
+              className="flex-1 py-3 px-4 bg-green-600 text-white rounded-xl font-bold text-lg hover:bg-green-700 transition-colors shadow-lg"
             >
-              开始游戏
+              🚀 开始游戏
             </button>
           )}
         </div>
